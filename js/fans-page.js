@@ -35,18 +35,18 @@
   }
 
   function payBlock(mode, spicy) {
-    const modeLabel = mode === "fullron" ? "全銂制" : "半銂制";
+    const modeLabel = mode === "fullron" ? "全銃制" : "半銃制";
     const spicyLabel = spicy === "full" ? "辣辣上" : "半辣上";
     const hint = mode === "fullron"
-      ? "表內數字 = 出銂者實付。自摸三家各付表內 1/4（同半銂一份）。"
-      : "出銂者付雙份，其他兩家付單份；自摸三家各付雙份。表內係單份金額。";
+      ? "表內數字 = 出銃者實付。自摸三家各付表內 1/4（同半銃一份）。"
+      : "出銃者付雙份，其他兩家付單份；自摸三家各付雙份。表內係單份金額。";
     return `
       <div class="section" id="pay">
         <h2>廣東麻雀籌碼計法</h2>
-        <p class="note">來源：<a href="https://zh.wikipedia.org/zh-hk/%E5%BB%A3%E6%9D%B1%E9%BA%BB%E9%9B%80%E7%B1%8C%E7%A2%BC%E8%A8%88%E6%B3%95" target="_blank" rel="noreferrer">維基 · 廣東麻雀籌碼計法</a>。你個 8番=$128、10番=$256 係 <b>全銂 + 半辣上 + 五一</b>。</p>
+        <p class="note">來源：<a href="https://zh.wikipedia.org/zh-hk/%E5%BB%A3%E6%9D%B1%E9%BA%BB%E9%9B%80%E7%B1%8C%E7%A2%BC%E8%A8%88%E6%B3%95" target="_blank" rel="noreferrer">維基 · 廣東麻雀籌碼計法</a>。你個 8番=$128、10番=$256 係 <b>全銃 + 半辣上 + 五一</b>。</p>
         <div class="chips" id="pay-mode">
-          <button class="chip${mode === "halfron" ? " active" : ""}" data-mode="halfron">半銂制</button>
-          <button class="chip${mode === "fullron" ? " active" : ""}" data-mode="fullron">全銂制</button>
+          <button class="chip${mode === "halfron" ? " active" : ""}" data-mode="halfron">半銃制</button>
+          <button class="chip${mode === "fullron" ? " active" : ""}" data-mode="fullron">全銃制</button>
         </div>
         <div class="chips" id="pay-spicy" style="margin-top:8px">
           <button class="chip${spicy === "half" ? " active" : ""}" data-spicy="half">半辣上</button>
@@ -57,7 +57,7 @@
         <ul class="note" style="margin-top:12px">
           <li>二五雞 / 五一 / 一二蚊：雞胡單份 $0.25 / $0.5 / $1，每加 1 番加倍，四番起再分辣辣或半辣。</li>
           <li>辣辣上：5=4×2，6=5×2。半辣上：5=4×1.5，6=4×2，7=6×1.5，8=6×2。</li>
-          <li>全銂制表內 = 出銂一家付齊（相當於半銂單份 × 4），所以五一半辣：<b>8 番 $128、10 番 $256</b>。</li>
+          <li>全銃制表內 = 出銃一家付齊（相當於半銃單份 × 4），所以五一半辣：<b>8 番 $128、10 番 $256</b>。</li>
         </ul>
       </div>`;
   }
@@ -83,7 +83,7 @@
         <div class="crumb"><a href="#home">計分館</a> / 番數表</div>
         <div class="kicker">FAN + CHIPS</div>
         <h1>番數表</h1>
-        <p class="lede">港麻番種 + 廣東籌碼計法（半銂／全銂、半辣／辣辣、二五雞／五一／一二蚊）。</p>
+        <p class="lede">港麻番種 + 廣東籌碼計法（半銃／全銃、半辣／辣辣、二五雞／五一／一二蚊）。</p>
         <div class="chips" id="fan-tabs">
           ${tabs.map((t) => `<button class="chip${t.id === g.id ? " active" : ""}" data-id="${t.id}">${t.name}</button>`).join("")}
         </div>
