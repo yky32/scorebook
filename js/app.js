@@ -8,6 +8,7 @@
     const hash = location.hash.replace(/^#/, "");
     if (!hash || hash === "home") return renderHome();
     if (hash === "about") return renderAbout();
+    if (hash === "cards" || hash === "poker") return renderCards();
     if (hash.startsWith("game/")) return renderGame(hash.slice(5));
     renderHome();
   }
@@ -73,6 +74,46 @@
     paint();
   }
 
+  function renderCards() {
+    const core = ["holdem", "big2", "blackjack"].map((id) => data.games.find((g) => g.id === id)).filter(Boolean);
+    const more = data.games.filter((g) => g.category === "撲克" && !["holdem", "big2", "blackjack"].includes(g.id));
+    layout(`
+      <article class="page wrap">
+        <div class="crumb"><a href="#home">計分館</a> / 撲克</div>
+        <div class="kicker">PLAYING CARDS</div>
+        <h1>撲克三件套</h1>
+        <p class="lede">先集中三款香港最常打的紙牌：德州撲克、鋤大D、21點。同一副 52 張，計分方法完全不同，所以分開頁、同一個入口。</p>
+        <div class="grid" style="margin-top:28px">
+          ${core.map((g, i) => `
+            <a class="card" href="#game/${g.id}">
+              <span class="tag">0${i + 1} · 撲克</span>
+              <h3>${g.id === "holdem" ? "撲克（德州）" : g.name}</h3>
+              <div class="meta">${g.players} · ${g.hand}</div>
+              <p class="meta">${g.summary}</p>
+            </a>
+          `).join("")}
+        </div>
+        <div class="panel section">
+          <h2>點解只先收三款</h2>
+          <p>紙牌變體極多（十三張、橋牌、短牌、Omaha、三公、炸金花…）。入口太多會散。先把使用率最高的三款做成標準計分頁，其他放在下面作延伸。</p>
+        </div>
+        ${more.length ? `
+        <div class="section">
+          <h2>同屬撲克、之後可開</h2>
+          <div class="grid">
+            ${more.map((g) => `
+              <a class="card" href="#game/${g.id}">
+                <span class="tag">${g.category}</span>
+                <h3>${g.name}</h3>
+                <div class="meta">${g.players} · ${g.hand}</div>
+              </a>
+            `).join("")}
+          </div>
+        </div>` : ""}
+      </article>
+    `, "撲克");
+  }
+
   function renderAbout() {
     layout(`
       <article class="page wrap">
@@ -81,7 +122,7 @@
         <div class="panel">
           <p>計分館用來集中存放牌類遊戲的<strong>計分方式</strong>與<strong>常見玩法</strong>。結構向 <a href="https://www.twmahjong.com/twmj/" target="_blank" rel="noreferrer">台灣麻雀番數表</a> 致敬：一張表講清番種、分數、解說。</p>
           <p>各地家規、牌館與線上平台數字都不一樣。這裡寫的是通行整理，不是官方唯一規則。開打前用本站當清單核對即可。</p>
-          <p>現階段先收入麻雀、鋤大D、十三張、德州、廿一點、鬥地主、拱豬、跑得快、橋牌。之後可以繼續加「八十張、升級、大排九、天九」等。</p>
+          <p>紙牌入口收斂成「撲克三件套」：德州、鋤大D、21點。麻雀另開番數表。其餘（十三張、橋牌、鬥地主等）仍可查，但不佔主航道。</p>
         </div>
       </article>
     `, "關於");
