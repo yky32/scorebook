@@ -111,7 +111,7 @@
   function renderCalc(g) {
     if (g.calculator === "tw-tai" || g.calculator === "tw-fan") {
       const fan = g.calculator === "tw-fan";
-      return `<div class="panel"><h2>${fan ? "番數計算機" : "台數計算機"}</h2><div class="calc"><div><label>${fan ? "底($)" : "底"}</label><input id="c-base" type="number" value="${fan ? 50 : 100}" /></div><div><label>${fan ? "一番($)" : "每台"}</label><input id="c-unit" type="number" value="${fan ? 10 : 20}" /></div><div><label>${fan ? "番數" : "台數"}</label><input id="c-tai" type="number" value="${fan ? 8 : 4}" /></div><div><label>胡法</label><select id="c-win"><option value="tsumo">自摸</option><option value="ron">出銂</option></select></div></div><div class="result" id="c-out"></div></div>`;
+      return `<div class="panel"><h2>${fan ? "番數計算機" : "台數計算機"}</h2><div class="calc"><div><label>${fan ? "底($)" : "底"}</label><input id="c-base" type="number" value="${fan ? 50 : 100}" /></div><div><label>${fan ? "一番($)" : "每台"}</label><input id="c-unit" type="number" value="${fan ? 10 : 20}" /></div><div><label>${fan ? "番數" : "台數"}</label><input id="c-tai" type="number" value="${fan ? 8 : 4}" /></div><div><label>胡法</label><select id="c-win"><option value="tsumo">自摸</option><option value="ron">出銃</option></select></div></div><div class="result" id="c-out"></div></div>`;
     }
     return `<div class="panel"><h2>查表提示</h2><p class="note">對下面計分表同上面牌型例子。</p></div>`;
   }
