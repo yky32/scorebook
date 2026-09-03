@@ -20,33 +20,32 @@
     app.innerHTML = inner;
   }
 
-  function tileMeta(code) {
+  function renderPiece(code) {
     const c = String(code || "").trim();
-    if (!c) return null;
+    if (!c) return "";
+    const cn = "一二三四五六七八九";
     if (/^[MPSmps][1-9]$/.test(c)) {
-      const kind = { M: "萬", P: "筒", S: "索", m: "萬", p: "筒", s: "索" }[c[0]];
-      const cls = { M: "man", P: "pin", S: "sou", m: "man", p: "pin", s: "sou" }[c[0]];
-      return { type: "tile", cls, top: c.slice(1), bot: kind };
+      const n = c.slice(1);
+      const kind = c[0].toUpperCase();
+      const label = cn[Number(n) - 1];
+      if (kind === "M") return `<span class="tile man" title="${label}萬"><b>${label}</b><small>萬</small></span>`;
+      if (kind === "P") return `<span class="tile pin" title="${label}筒"><span class="dots n${n}">${ "<i></i>".repeat(Number(n)) }</span></span>`;
+      return `<span class="tile sou" title="${label}索"><span class="bams n${n}">${ "<i></i>".repeat(Number(n)) }</span></span>`;
     }
-    const winds = { WE: ["東", "風"], WS: ["南", "風"], WW: ["西", "風"], WN: ["北", "風"] };
-    if (winds[c]) return { type: "tile", cls: "wind", top: winds[c][0], bot: winds[c][1] };
-    const dragons = { DR: ["中", "箭"], DG: ["發", "箭"], DW: ["白", "箭"] };
-    if (dragons[c]) return { type: "tile", cls: c === "DR" ? "zhong" : c === "DG" ? "fa" : "bai", top: dragons[c][0], bot: dragons[c][1] };
+    const winds = { WE: "東", WS: "南", WW: "西", WN: "北" };
+    if (winds[c]) return `<span class="tile honor wind" title="${winds[c]}">${winds[c]}</span>`;
+    if (c === "DR") return `<span class="tile honor zhong" title="紅中">中</span>`;
+    if (c === "DG") return `<span class="tile honor fa" title="發財">發</span>`;
+    if (c === "DW") return `<span class="tile honor bai" title="白板"><span class="blank"></span></span>`;
     const m = c.match(/^([2-9]|10|[AJQKajqk])([shdcSHDC])$/);
     if (m) {
       const rank = m[1].toUpperCase();
       const suitMap = { s: ["♠", "s"], h: ["♥", "h"], d: ["♦", "d"], c: ["♣", "c"] };
       const pair = suitMap[m[2].toLowerCase()];
-      return { type: "card", cls: (pair[1] === "h" || pair[1] === "d") ? "red" : "black", rank, suit: pair[0] };
+      const color = (pair[1] === "h" || pair[1] === "d") ? "red" : "black";
+      return `<span class="pcard ${color}"><b>${rank}</b><i>${pair[0]}</i></span>`;
     }
-    return { type: "tile", cls: "man", top: c, bot: "" };
-  }
-
-  function renderPiece(code) {
-    const t = tileMeta(code);
-    if (!t) return "";
-    if (t.type === "card") return `<span class="pcard ${t.cls}"><b>${t.rank}</b><i>${t.suit}</i></span>`;
-    return `<span class="tile ${t.cls}"><b>${t.top}</b><small>${t.bot}</small></span>`;
+    return `<span class="tile honor">${c}</span>`;
   }
 
   function renderSample(s) {
@@ -57,11 +56,11 @@
 
   function renderGallery() {
     const picks = ["hk-mj", "big2", "holdem", "blackjack", "niuniu", "zhajinhua"].map((id) => data.games.find((g) => g.id === id)).filter((g) => g && g.samples && g.samples.length);
-    layout(`<article class="page wrap"><div class="crumb"><a href="#home">計分館</a> / 牌型</div><div class="kicker">HAND SAMPLES</div><h1>牌型圖解</h1><p class="lede">用畫面睇組合。麻雀係面子 + 眼；撲克／鋤大D／21點用同一副牌但規則不同。</p>${picks.map((g) => `<div class="section"><h2><a href="#game/${g.id}">${g.name}</a></h2><div class="sample-list">${g.samples.map(renderSample).join("")}</div></div>`).join("")}</article>`, "牌型圖解");
+    layout(`<article class="page wrap"><div class="crumb"><a href="#home">計分館</a> / 牌型</div><div class="kicker">HAND SAMPLES</div><h1>牌型圖解</h1><p class="lede">香港叫中發白、風牌，唔叫箭。下面係牌面組合例子。</p>${picks.map((g) => `<div class="section"><h2><a href="#game/${g.id}">${g.name}</a></h2><div class="sample-list">${g.samples.map(renderSample).join("")}</div></div>`).join("")}</article>`, "牌型圖解");
   }
 
   function renderHome() {
-    layout(`<section class="hero wrap"><div class="kicker">SCORING ATLAS</div><h1>計分館</h1><p class="lede">${data.site.blurb}</p><div class="hubs"><a class="card" href="#mj"><span class="tag">TILES</span><h3>麻雀</h3><p class="meta">港式 13 張、台灣 16 張番數／台數。</p></a><a class="card" href="#cards"><span class="tag">CARDS</span><h3>撲克三件套</h3><p class="meta">德州、鋤大D、21點。</p></a><a class="card" href="#tables"><span class="tag">TABLE</span><h3>檮面</h3><p class="meta">百家樂、骰寶、魚蝦蟹。</p></a><a class="card" href="#gallery"><span class="tag">HANDS</span><h3>牌型圖解</h3><p class="meta">平胡、清一色、葫蘆、Blackjack 用畫面睇。</p></a></div><div class="search-row"><input id="q" type="search" placeholder="搜尋：平胡、牛牛、葫蘆…" /><select id="cat">${data.categories.map((c) => `<option>${c}</option>`).join("")}</select></div><div class="chips" id="chips"></div></section><section class="wrap grid" id="grid"></section>`, "");
+    layout(`<section class="hero wrap"><div class="kicker">SCORING ATLAS</div><h1>計分館</h1><p class="lede">${data.site.blurb}</p><div class="hubs"><a class="card" href="#mj"><span class="tag">TILES</span><h3>麻雀</h3><p class="meta">港式 13 張、台灣 16 張番數／台數。</p></a><a class="card" href="#cards"><span class="tag">CARDS</span><h3>撲克三件套</h3><p class="meta">德州、鋤大D、21點。</p></a><a class="card" href="#tables"><span class="tag">TABLE</span><h3>檮面</h3><p class="meta">百家樂、骰寶、魚蝦蟹。</p></a><a class="card" href="#gallery"><span class="tag">HANDS</span><h3>牌型圖解</h3><p class="meta">平胡、清一色、葫蘆、Blackjack。</p></a></div><div class="search-row"><input id="q" type="search" placeholder="搜尋：平胡、牛牛、葫蘆…" /><select id="cat">${data.categories.map((c) => `<option>${c}</option>`).join("")}</select></div><div class="chips" id="chips"></div></section><section class="wrap grid" id="grid"></section>`, "");
     const q = $("#q"), cat = $("#cat"), grid = $("#grid"), chips = $("#chips");
     data.categories.slice(1).forEach((c) => {
       const b = document.createElement("button");
@@ -93,7 +92,7 @@
   function renderCards() {
     const core = ["holdem", "big2", "blackjack"].map((id) => data.games.find((g) => g.id === id)).filter(Boolean);
     const more = data.games.filter((g) => g.category === "撲克" && !["holdem", "big2", "blackjack"].includes(g.id));
-    layout(`<article class="page wrap"><div class="crumb"><a href="#home">計分館</a> / 撲克</div><div class="kicker">PLAYING CARDS</div><h1>撲克三件套</h1><p class="lede">德州、鋤大D、21點。同一副牌，三種計法。</p><div class="grid" style="margin-top:28px">${core.map((g, i) => `<a class="card" href="#game/${g.id}"><span class="tag">0${i + 1} · 撲克</span><h3>${g.id === "holdem" ? "撲克（德州）" : g.name}</h3><div class="meta">${g.players} · ${g.hand}</div><p class="meta">${g.summary}</p></a>`).join("")}</div>${more.length ? `<div class="section"><h2>延伸</h2><div class="grid">${more.map((g) => `<a class="card" href="#game/${g.id}"><span class="tag">${g.category}</span><h3>${g.name}</h3><div class="meta">${g.players} · ${g.hand}</div></a>`).join("")}</div></div>` : ""}</article>`, "撲克");
+    layout(`<article class="page wrap"><div class="crumb"><a href="#home">計分館</a> / 撲克</div><div class="kicker">PLAYING CARDS</div><h1>撲克三件套</h1><p class="lede">德州、鋤大D、21點。</p><div class="grid" style="margin-top:28px">${core.map((g, i) => `<a class="card" href="#game/${g.id}"><span class="tag">0${i + 1} · 撲克</span><h3>${g.id === "holdem" ? "撲克（德州）" : g.name}</h3><div class="meta">${g.players} · ${g.hand}</div><p class="meta">${g.summary}</p></a>`).join("")}</div>${more.length ? `<div class="section"><h2>延伸</h2><div class="grid">${more.map((g) => `<a class="card" href="#game/${g.id}"><span class="tag">${g.category}</span><h3>${g.name}</h3><div class="meta">${g.players} · ${g.hand}</div></a>`).join("")}</div></div>` : ""}</article>`, "撲克");
   }
 
   function renderAbout() {
@@ -104,7 +103,7 @@
     const g = data.games.find((x) => x.id === id);
     if (!g) return renderHome();
     const rows = (g.scoring || []).map((s) => `<tr><td>${s.name}</td><td class="fan">${s.fan}</td><td>${s.note || ""}</td></tr>`).join("");
-    const samples = g.samples && g.samples.length ? `<div class="section"><h2>牌型例子</h2><p class="note">常見組合畫面，花色可以換。</p><div class="sample-list">${g.samples.map(renderSample).join("")}</div></div>` : "";
+    const samples = g.samples && g.samples.length ? `<div class="section"><h2>牌型例子</h2><p class="note">香港叫中發白、風牌，唔叫箭。</p><div class="sample-list">${g.samples.map(renderSample).join("")}</div></div>` : "";
     layout(`<article class="page wrap"><div class="crumb"><a href="#home">計分館</a> / ${g.category}</div><div class="kicker">${g.category}</div><h1>${g.name}</h1><p class="lede">${g.summary}</p><div class="badge-row"><span class="badge">${g.players}</span><span class="badge">${g.hand}</span><span class="badge">${g.unit}</span></div><div class="two-col section"><div class="panel"><h2>玩法要點</h2><ol class="steps">${g.rules.map((r) => `<li>${r}</li>`).join("")}</ol></div><div>${renderCalc(g)}</div></div>${samples}<div class="section"><h2>計分表</h2><div style="overflow:auto"><table class="score"><thead><tr><th>名稱</th><th>分數</th><th>解說</th></tr></thead><tbody>${rows}</tbody></table></div></div>${g.extras && g.extras.length ? `<div class="section panel"><h2>台面備註</h2><ul>${g.extras.map((e) => `<li>${e}</li>`).join("")}</ul></div>` : ""}</article>`, g.name);
     wireCalc(g);
   }
