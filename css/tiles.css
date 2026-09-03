@@ -1,21 +1,22 @@
 .hubs { grid-template-columns: repeat(2, 1fr) !important; }
 .sample-list { display: grid; gap: 12px; }
 .sample {
-  background: #f7f1e4; border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.18));
+  border: 1px solid var(--line);
   border-radius: 16px; padding: 14px 16px;
 }
 .sample-h { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; margin-bottom: 12px; }
-.sample-h strong { font-size: 16px; }
+.sample-h strong { font-size: 16px; color: var(--ivory); }
 .sample-h span { color: var(--ink-soft); font-size: 13px; }
 .hand { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; }
-.meld { display: flex; gap: 3px; padding-right: 10px; border-right: 1px dashed #d7c9ae; }
+.meld { display: flex; gap: 3px; padding-right: 10px; border-right: 1px dashed rgba(224,184,74,.25); }
 .meld:last-child { border-right: 0; padding-right: 0; }
 
 .tile {
   width: 36px; height: 50px; border-radius: 5px;
   background: linear-gradient(180deg, #fffdf6 0%, #f4ead3 70%, #e8d7b4 100%);
   border: 1px solid #c4ae86;
-  box-shadow: 2px 0 0 #6f8a62, 0 1px 0 #fff inset, 0 3px 5px rgba(28,25,20,.16);
+  box-shadow: 2px 0 0 #6f8a62, 0 1px 0 #fff inset, 0 6px 10px rgba(0,0,0,.35);
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; line-height: 1; position: relative;
   overflow: hidden;
@@ -83,7 +84,7 @@
 .pcard {
   width: 38px; height: 54px; border-radius: 6px;
   background: #fff; border: 1px solid #cfc3ae;
-  box-shadow: 0 2px 4px rgba(28,25,20,.12);
+  box-shadow: 0 4px 8px rgba(0,0,0,.35);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   font-weight: 800; line-height: 1;
 }
