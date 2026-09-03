@@ -9,23 +9,30 @@
     if (!hash || hash === "home") return renderHome();
     if (hash === "about") return renderAbout();
     if (hash === "cards" || hash === "poker") return renderCards();
+    if (hash === "mj") return renderHub("麻雀", "麻雀計分", "13 張港麻同 16 張台麻計法完全唔同，分開查，唔好撈亂。", (g) => g.category === "麻雀");
+    if (hash === "tables") return renderHub("檮面", "檮面賠率", "百家樂、骰寶、魚蝦蟹。只寫通行賠率，實際以枱面告示同家規為準。", (g) => g.category === "檮面");
     if (hash.startsWith("game/")) return renderGame(hash.slice(5));
     renderHome();
   }
 
   function layout(inner, title) {
-    document.title = title ? title + " · 計分館" : "計分館 · 牌類計分玩法";
+    document.title = title ? title + " · 計分館" : "計分館 · 牌局計分百科";
     app.innerHTML = inner;
   }
 
   function renderHome() {
     layout(`
       <section class="hero wrap">
-        <div class="kicker">CARD & TILE SCORING ATLAS</div>
+        <div class="kicker">SCORING ATLAS · HK TABLES</div>
         <h1>計分館</h1>
         <p class="lede">${data.site.blurb}</p>
+        <div class="hubs">
+          <a class="card" href="#mj"><span class="tag">TILES</span><h3>麻雀</h3><p class="meta">港式 13 張、台灣 16 張番數／台數、國標。開枱對番表。</p></a>
+          <a class="card" href="#cards"><span class="tag">CARDS</span><h3>撲克三件套</h3><p class="meta">德州、鋤大D、21點。同一副牌，三種計法。</p></a>
+          <a class="card" href="#tables"><span class="tag">TABLE</span><h3>檮面</h3><p class="meta">百家樂、骰寶、魚蝦蟹。只記賠率，唔開局。</p></a>
+        </div>
         <div class="search-row">
-          <input id="q" type="search" placeholder="搜尋遊戲、番種、台數、鋤大D、鬥地主…" />
+          <input id="q" type="search" placeholder="搜尋：平胡、牛牛、百家樂、鋤大D…" />
           <select id="cat">
             ${data.categories.map((c) => `<option>${c}</option>`).join("")}
           </select>
@@ -74,6 +81,28 @@
     paint();
   }
 
+  function renderHub(cat, title, lede, pred) {
+    const list = data.games.filter(pred);
+    layout(`
+      <article class="page wrap">
+        <div class="crumb"><a href="#home">計分館</a> / ${cat}</div>
+        <div class="kicker">${cat}</div>
+        <h1>${title}</h1>
+        <p class="lede">${lede}</p>
+        <div class="grid" style="margin-top:28px">
+          ${list.map((g) => `
+            <a class="card" href="#game/${g.id}">
+              <span class="tag">${g.category}</span>
+              <h3>${g.name}</h3>
+              <div class="meta">${g.players} · ${g.hand}</div>
+              <p class="meta">${g.summary}</p>
+            </a>
+          `).join("")}
+        </div>
+      </article>
+    `, title);
+  }
+
   function renderCards() {
     const core = ["holdem", "big2", "blackjack"].map((id) => data.games.find((g) => g.id === id)).filter(Boolean);
     const more = data.games.filter((g) => g.category === "撲克" && !["holdem", "big2", "blackjack"].includes(g.id));
@@ -95,7 +124,7 @@
         </div>
         <div class="panel section">
           <h2>點解只先收三款</h2>
-          <p>紙牌變體極多（十三張、橋牌、短牌、Omaha、三公、炸金花…）。入口太多會散。先把使用率最高的三款做成標準計分頁，其他放在下面作延伸。</p>
+          <p>紙牌變體極多。先把使用率最高的三款做成標準計分頁，其他放在下面作延伸。</p>
         </div>
         ${more.length ? `
         <div class="section">
@@ -120,9 +149,8 @@
         <div class="crumb"><a href="#home">計分館</a> / 關於</div>
         <h1>關於這本簿</h1>
         <div class="panel">
-          <p>計分館用來集中存放牌類遊戲的<strong>計分方式</strong>與<strong>常見玩法</strong>。結構向 <a href="https://www.twmahjong.com/twmj/" target="_blank" rel="noreferrer">台灣麻雀番數表</a> 致敬：一張表講清番種、分數、解說。</p>
-          <p>各地家規、牌館與線上平台數字都不一樣。這裡寫的是通行整理，不是官方唯一規則。開打前用本站當清單核對即可。</p>
-          <p>紙牌入口收斂成「撲克三件套」：德州、鋤大D、21點。麻雀另開番數表。其餘（十三張、橋牌、鬥地主等）仍可查，但不佔主航道。</p>
+          <p>計分館係<strong>計分參考</strong>，唔係賭場、唔收注、唔撥合賭局。未滿 18 歲唔適用。香港對非法賭博有法例，玩家自行守法。</p>
+          <p>主航道三條：麻雀番表、撲克三件套、檮面賠率。家規永遠大過網頁。</p>
         </div>
       </article>
     `, "關於");
@@ -132,13 +160,8 @@
     const g = data.games.find((x) => x.id === id);
     if (!g) return renderHome();
     const rows = (g.scoring || []).map((s) => `
-      <tr>
-        <td>${s.name}</td>
-        <td class="fan">${s.fan}</td>
-        <td>${s.note || ""}</td>
-      </tr>
+      <tr><td>${s.name}</td><td class="fan">${s.fan}</td><td>${s.note || ""}</td></tr>
     `).join("");
-
     layout(`
       <article class="page wrap">
         <div class="crumb"><a href="#home">計分館</a> / ${g.category}</div>
@@ -150,7 +173,6 @@
           <span class="badge">${g.hand}</span>
           <span class="badge">計分單位：${g.unit}</span>
         </div>
-
         <div class="two-col section">
           <div class="panel">
             <h2>玩法要點</h2>
@@ -158,10 +180,9 @@
           </div>
           <div>${renderCalc(g)}</div>
         </div>
-
         <div class="section">
           <h2>計分表</h2>
-          <p class="note">可在表格上用瀏覽器搜尋（Ctrl / ⌘ + F）。數字為常見值，家規請自行覆蓋。</p>
+          <p class="note">數字為常見值，家規請自行覆蓋。</p>
           <div style="overflow:auto">
             <table class="score">
               <thead><tr><th>名稱</th><th>分數</th><th>解說</th></tr></thead>
@@ -169,62 +190,24 @@
             </table>
           </div>
         </div>
-
-        ${g.extras && g.extras.length ? `
-          <div class="section panel">
-            <h2>台面備註</h2>
-            <ul>${g.extras.map((e) => `<li>${e}</li>`).join("")}</ul>
-          </div>` : ""}
+        ${g.extras && g.extras.length ? `<div class="section panel"><h2>台面備註</h2><ul>${g.extras.map((e) => `<li>${e}</li>`).join("")}</ul></div>` : ""}
       </article>
     `, g.name);
-
     wireCalc(g);
   }
 
   function renderCalc(g) {
-    if (g.calculator === "tw-tai") {
-      return `
-        <div class="panel">
-          <h2>台數計算機</h2>
-          <div class="calc">
-            <div><label>底</label><input id="c-base" type="number" value="100" /></div>
-            <div><label>每台</label><input id="c-unit" type="number" value="20" /></div>
-            <div><label>台數</label><input id="c-tai" type="number" value="4" /></div>
-            <div>
-              <label>胡法</label>
-              <select id="c-win">
-                <option value="tsumo">自摸（收三家）</option>
-                <option value="ron">出銂（收一家）</option>
-              </select>
-            </div>
-          </div>
-          <div class="result" id="c-out"></div>
-        </div>`;
+    if (g.calculator === "tw-tai" || g.calculator === "tw-fan") {
+      const title = g.calculator === "tw-fan" ? "番數計算機" : "台數計算機";
+      const u1 = g.calculator === "tw-fan" ? "底（$）" : "底";
+      const u2 = g.calculator === "tw-fan" ? "一番（$）" : "每台";
+      const u3 = g.calculator === "tw-fan" ? "番數" : "台數";
+      const v1 = g.calculator === "tw-fan" ? "50" : "100";
+      const v2 = g.calculator === "tw-fan" ? "10" : "20";
+      const v3 = g.calculator === "tw-fan" ? "8" : "4";
+      return `<div class="panel"><h2>${title}</h2><div class="calc"><div><label>${u1}</label><input id="c-base" type="number" value="${v1}" /></div><div><label>${u2}</label><input id="c-unit" type="number" value="${v2}" /></div><div><label>${u3}</label><input id="c-tai" type="number" value="${v3}" /></div><div><label>胡法</label><select id="c-win"><option value="tsumo">自摸（收三家）</option><option value="ron">出銂（收一家）</option></select></div></div><div class="result" id="c-out"></div></div>`;
     }
-    if (g.calculator === "tw-fan") {
-      return `
-        <div class="panel">
-          <h2>番數計算機</h2>
-          <div class="calc">
-            <div><label>底（$）</label><input id="c-base" type="number" value="50" /></div>
-            <div><label>一番（$）</label><input id="c-unit" type="number" value="10" /></div>
-            <div><label>番數</label><input id="c-tai" type="number" value="8" /></div>
-            <div>
-              <label>胡法</label>
-              <select id="c-win">
-                <option value="tsumo">自摸（收三家）</option>
-                <option value="ron">出銂（收一家）</option>
-              </select>
-            </div>
-          </div>
-          <div class="result" id="c-out"></div>
-        </div>`;
-    }
-    return `
-      <div class="panel">
-        <h2>查表提示</h2>
-        <p class="note">此遊戲以牌型或底池結算，用左列規則 + 下方計分表即可。開局先把「加倍條件」講完。</p>
-      </div>`;
+    return `<div class="panel"><h2>查表提示</h2><p class="note">用左列規則 + 下方計分表即可。開局先講完加倍條件。</p></div>`;
   }
 
   function wireCalc(g) {
@@ -235,13 +218,10 @@
     const win = $("#c-win");
     const out = $("#c-out");
     const paint = () => {
-      const b = Number(base.value) || 0;
-      const u = Number(unit.value) || 0;
-      const t = Number(tai.value) || 0;
-      const one = b + u * t;
+      const one = (Number(base.value) || 0) + (Number(unit.value) || 0) * (Number(tai.value) || 0);
       const times = win.value === "tsumo" ? 3 : 1;
       const label = g.calculator === "tw-fan" ? "番" : "台";
-      out.innerHTML = `每家應付 <b>$${one}</b><br/>贏家共收 <b>$${one * times}</b>（${win.value === "tsumo" ? "自摸 ×3" : "出銂 ×1"}，${t} ${label}）`;
+      out.innerHTML = `每家應付 <b>$${one}</b><br/>贏家共收 <b>$${one * times}</b>（${win.value === "tsumo" ? "自摸 ×3" : "出銂 ×1"}，${tai.value} ${label}）`;
     };
     [base, unit, tai, win].forEach((el) => el.addEventListener("input", paint));
     win.addEventListener("change", paint);
